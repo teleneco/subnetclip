@@ -1,0 +1,182 @@
+html {
+  width: 680px;
+}
+
+:root {
+  color-scheme: light;
+  --bg-top: #fff4dc;
+  --bg-bottom: #dbeeff;
+  --panel: rgba(255, 255, 255, 0.9);
+  --panel-border: rgba(23, 37, 84, 0.12);
+  --text: #15233b;
+  --muted: #54637d;
+  --accent: #0f766e;
+  --accent-strong: #115e59;
+  --error: #b42318;
+  --shadow: 0 18px 50px rgba(21, 35, 59, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 680px;
+  min-width: 680px;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.7), transparent 45%),
+    linear-gradient(155deg, var(--bg-top), var(--bg-bottom));
+}
+
+.app {
+  width: 100%;
+  padding: 18px 20px;
+}
+
+.hero {
+  margin-bottom: 12px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.card {
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.field {
+  display: block;
+  margin-bottom: 0;
+}
+
+.field input {
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid rgba(21, 35, 59, 0.14);
+  border-radius: 14px;
+  font-size: 15px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.field input:focus {
+  outline: 2px solid rgba(15, 118, 110, 0.18);
+  border-color: rgba(15, 118, 110, 0.45);
+}
+
+.error {
+  display: none;
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--error);
+}
+
+.error.has-text {
+  display: block;
+}
+
+.results.hidden {
+  display: none;
+}
+
+.result-list {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 12px;
+}
+
+.result-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(21, 35, 59, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.result-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.result-row span {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.result-row code {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.copy-button {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  border: 1px solid rgba(21, 35, 59, 0.1);
+  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.85);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-button svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.copy-button:hover {
+  border-color: rgba(15, 118, 110, 0.24);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.copy-button:focus-visible {
+  outline: 2px solid rgba(15, 118, 110, 0.22);
+  outline-offset: 2px;
+}
+
+.copy-button.copied {
+  border-color: rgba(15, 118, 110, 0.42);
+  background: rgba(220, 252, 231, 0.7);
+  color: var(--accent-strong);
+}
