@@ -191,7 +191,7 @@ function calculateNetwork(ip, cidr) {
     items: [
       { label: "Network", value: intToIp(networkInt) },
       { label: "Broadcast", value: intToIp(broadcastInt) },
-      { label: "CIDR", value: `/${cidr}` },
+      { label: "CIDR", value: String(cidr) },
       { label: "Subnet", value: intToIp(maskInt) },
       { label: "Wildmask", value: intToIp(wildcardInt) },
       { label: "Hosts", value: usableHosts.toLocaleString("en-US") }
