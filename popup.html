@@ -20,7 +20,7 @@
             type="text"
             autocomplete="off"
             spellcheck="false"
-            placeholder="192.168.10.14/24 or 192.168.10.14 255.255.255.0"
+            placeholder="IP/prefix (v4/v6) or IP/subnet (v4)"
           />
         </div>
 
@@ -28,80 +28,7 @@
       </section>
 
       <section id="results" class="card results hidden" aria-live="polite">
-        <div class="result-list">
-          <div class="result-row">
-            <div class="result-head">
-              <span>Network</span>
-              <button class="copy-button" data-copy-target="result-network" type="button" aria-label="Copy Network">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M9 9a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z"></path>
-                  <path d="M6 15H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1"></path>
-                </svg>
-              </button>
-            </div>
-            <code id="result-network"></code>
-          </div>
-          <div class="result-row">
-            <div class="result-head">
-              <span>Broadcast</span>
-              <button class="copy-button" data-copy-target="result-broadcast" type="button" aria-label="Copy Broadcast">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M9 9a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z"></path>
-                  <path d="M6 15H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1"></path>
-                </svg>
-              </button>
-            </div>
-            <code id="result-broadcast"></code>
-          </div>
-          <div class="result-row">
-            <div class="result-head">
-              <span>CIDR</span>
-              <button class="copy-button" data-copy-target="result-cidr" type="button" aria-label="Copy CIDR">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M9 9a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z"></path>
-                  <path d="M6 15H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1"></path>
-                </svg>
-              </button>
-            </div>
-            <code id="result-cidr"></code>
-          </div>
-          <div class="result-row">
-            <div class="result-head">
-              <span>Subnet</span>
-              <button class="copy-button" data-copy-target="result-mask" type="button" aria-label="Copy Subnet">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M9 9a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z"></path>
-                  <path d="M6 15H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1"></path>
-                </svg>
-              </button>
-            </div>
-            <code id="result-mask"></code>
-          </div>
-          <div class="result-row">
-            <div class="result-head">
-              <span>Wildmask</span>
-              <button class="copy-button" data-copy-target="result-wildcard" type="button" aria-label="Copy Wildmask">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M9 9a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z"></path>
-                  <path d="M6 15H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1"></path>
-                </svg>
-              </button>
-            </div>
-            <code id="result-wildcard"></code>
-          </div>
-          <div class="result-row">
-            <div class="result-head">
-              <span>Hosts</span>
-              <button class="copy-button" data-copy-target="result-hosts" type="button" aria-label="Copy Hosts">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M9 9a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z"></path>
-                  <path d="M6 15H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1"></path>
-                </svg>
-              </button>
-            </div>
-            <code id="result-hosts"></code>
-          </div>
-        </div>
+        <div id="result-list" class="result-list"></div>
       </section>
     </main>
 

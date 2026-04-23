@@ -1,5 +1,5 @@
 html {
-  width: 680px;
+  width: 620px;
 }
 
 :root {
@@ -22,8 +22,8 @@ html {
 
 body {
   margin: 0;
-  width: 680px;
-  min-width: 680px;
+  width: 620px;
+  min-width: 620px;
   font-family: "Avenir Next", "Segoe UI", sans-serif;
   color: var(--text);
   background:
@@ -33,22 +33,22 @@ body {
 
 .app {
   width: 100%;
-  padding: 18px 20px;
+  padding: 16px 18px;
 }
 
 .hero {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .hero h1 {
   margin: 0;
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1;
 }
 
 .card {
-  padding: 16px;
-  margin-bottom: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
   border: 1px solid var(--panel-border);
   border-radius: 18px;
   background: var(--panel);
@@ -63,7 +63,7 @@ body {
 
 .field input {
   width: 100%;
-  padding: 16px 18px;
+  padding: 14px 16px;
   border: 1px solid rgba(21, 35, 59, 0.14);
   border-radius: 14px;
   font-size: 15px;
@@ -96,7 +96,11 @@ body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
-  gap: 12px;
+  gap: 10px;
+}
+
+.result-list.single-column {
+  grid-template-columns: 1fr;
 }
 
 .result-row {
@@ -107,7 +111,7 @@ body {
   gap: 8px;
   min-width: 0;
   width: 100%;
-  padding: 14px 16px;
+  padding: 12px 14px;
   border: 1px solid rgba(21, 35, 59, 0.08);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.62);
@@ -117,7 +121,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
 }
 
@@ -132,7 +136,7 @@ body {
   display: block;
   width: 100%;
   min-width: 0;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   text-align: left;
   word-break: normal;
@@ -145,8 +149,8 @@ body {
   cursor: pointer;
   border: 1px solid rgba(21, 35, 59, 0.1);
   border-radius: 10px;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   color: var(--muted);
   background: rgba(255, 255, 255, 0.85);
@@ -156,8 +160,8 @@ body {
 }
 
 .copy-button svg {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;

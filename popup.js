@@ -1,16 +1,13 @@
 const networkInput = document.querySelector("#network-input");
 const errorMessage = document.querySelector("#error-message");
 const results = document.querySelector("#results");
-const copyButtons = document.querySelectorAll(".copy-button");
-
-const fields = {
-  cidr: document.querySelector("#result-cidr"),
-  mask: document.querySelector("#result-mask"),
-  wildcard: document.querySelector("#result-wildcard"),
-  network: document.querySelector("#result-network"),
-  broadcast: document.querySelector("#result-broadcast"),
-  hosts: document.querySelector("#result-hosts")
-};
+const resultList = document.querySelector("#result-list");
+const COPY_ICON = `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M9 9a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z"></path>
+    <path d="M6 15H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1"></path>
+  </svg>
+`;
 
 function ipToInt(ip) {
   const octets = ip.split(".");
@@ -84,6 +81,10 @@ function isIpv4Token(value) {
   return /^\d{1,3}(?:\.\d{1,3}){3}$/.test(value);
 }
 
+function isIpv6Token(value) {
+  return value.includes(":");
+}
+
 function parseInput(rawValue) {
   const normalized = rawValue.trim().replace(/\s*\/\s*/g, "/");
 
@@ -97,11 +98,27 @@ function parseInput(rawValue) {
       throw new Error("`IP/CIDR` か `IP/subnet mask` の形式で入力してください。");
     }
 
-    if (isIpv4Token(suffixPart)) {
-      return { ip: ipPart, cidr: maskToCidr(suffixPart) };
+    if (isIpv6Token(ipPart)) {
+      return {
+        version: 6,
+        ip: ipPart,
+        cidr: Number(suffixPart)
+      };
     }
 
-    return { ip: ipPart, cidr: Number(suffixPart) };
+    if (isIpv4Token(suffixPart)) {
+      return {
+        version: 4,
+        ip: ipPart,
+        cidr: maskToCidr(suffixPart)
+      };
+    }
+
+    return {
+      version: 4,
+      ip: ipPart,
+      cidr: Number(suffixPart)
+    };
   }
 
   const parts = normalized.split(/[,\s]+/).filter(Boolean);
@@ -114,11 +131,27 @@ function parseInput(rawValue) {
     throw new Error("入力形式を解釈できませんでした。");
   }
 
-  if (isIpv4Token(suffixPart)) {
-    return { ip: ipPart, cidr: maskToCidr(suffixPart) };
+  if (isIpv6Token(ipPart)) {
+    return {
+      version: 6,
+      ip: ipPart,
+      cidr: Number(suffixPart)
+    };
   }
 
-  return { ip: ipPart, cidr: Number(suffixPart) };
+  if (isIpv4Token(suffixPart)) {
+    return {
+      version: 4,
+      ip: ipPart,
+      cidr: maskToCidr(suffixPart)
+    };
+  }
+
+  return {
+    version: 4,
+    ip: ipPart,
+    cidr: Number(suffixPart)
+  };
 }
 
 function isCompleteInput(rawValue) {
@@ -154,22 +187,168 @@ function calculateNetwork(ip, cidr) {
   }
 
   return {
-    cidr,
-    subnetMask: intToIp(maskInt),
-    wildcardMask: intToIp(wildcardInt),
-    networkAddress: intToIp(networkInt),
-    broadcastAddress: intToIp(broadcastInt),
-    usableHosts: usableHosts.toLocaleString("en-US")
+    version: 4,
+    items: [
+      { label: "Network", value: intToIp(networkInt) },
+      { label: "Broadcast", value: intToIp(broadcastInt) },
+      { label: "CIDR", value: `/${cidr}` },
+      { label: "Subnet", value: intToIp(maskInt) },
+      { label: "Wildmask", value: intToIp(wildcardInt) },
+      { label: "Hosts", value: usableHosts.toLocaleString("en-US") }
+    ]
+  };
+}
+
+function parseIpv6(ip) {
+  const normalized = ip.toLowerCase();
+  if (!/^[0-9a-f:]+$/.test(normalized)) {
+    throw new Error("IPv6 アドレスの形式が不正です。");
+  }
+
+  if (normalized.includes(":::")) {
+    throw new Error("IPv6 アドレスの形式が不正です。");
+  }
+
+  const parts = normalized.split("::");
+  if (parts.length > 2) {
+    throw new Error("IPv6 アドレスの形式が不正です。");
+  }
+  const hasCompression = normalized.includes("::");
+
+  const left = parts[0] ? parts[0].split(":").filter(Boolean) : [];
+  const right = parts[1] ? parts[1].split(":").filter(Boolean) : [];
+
+  if (!hasCompression && left.length !== 8) {
+    throw new Error("IPv6 アドレスは 8 ヘクステットで入力してください。");
+  }
+
+  if (left.length + right.length > 8) {
+    throw new Error("IPv6 アドレスの形式が不正です。");
+  }
+
+  const missingCount = 8 - left.length - right.length;
+  const expanded = [...left, ...Array(missingCount).fill("0"), ...right];
+
+  if (expanded.length !== 8) {
+    throw new Error("IPv6 アドレスの形式が不正です。");
+  }
+
+  return expanded.map((part) => {
+    if (!/^[0-9a-f]{1,4}$/.test(part)) {
+      throw new Error("IPv6 アドレスの形式が不正です。");
+    }
+    return part.padStart(4, "0");
+  });
+}
+
+function ipv6ToBigInt(parts) {
+  return parts.reduce((value, part) => (value << 16n) + BigInt(`0x${part}`), 0n);
+}
+
+function bigIntToIpv6(value) {
+  const parts = [];
+  let current = value;
+  for (let index = 0; index < 8; index += 1) {
+    parts.unshift(Number(current & 0xffffn).toString(16).padStart(4, "0"));
+    current >>= 16n;
+  }
+  return parts;
+}
+
+function compressIpv6(parts) {
+  const shortened = parts.map((part) => part.replace(/^0+/, "") || "0");
+  let bestStart = -1;
+  let bestLength = 0;
+  let currentStart = -1;
+  let currentLength = 0;
+
+  shortened.forEach((part, index) => {
+    if (part === "0") {
+      if (currentStart === -1) {
+        currentStart = index;
+        currentLength = 1;
+      } else {
+        currentLength += 1;
+      }
+
+      if (currentLength > bestLength) {
+        bestStart = currentStart;
+        bestLength = currentLength;
+      }
+    } else {
+      currentStart = -1;
+      currentLength = 0;
+    }
+  });
+
+  if (bestLength < 2) {
+    return shortened.join(":");
+  }
+
+  const head = shortened.slice(0, bestStart).join(":");
+  const tail = shortened.slice(bestStart + bestLength).join(":");
+
+  if (!head && !tail) {
+    return "::";
+  }
+
+  if (!head) {
+    return `::${tail}`;
+  }
+
+  if (!tail) {
+    return `${head}::`;
+  }
+
+  return `${head}::${tail}`;
+}
+
+function calculateIpv6(ip, cidr) {
+  if (!Number.isInteger(cidr) || cidr < 0 || cidr > 128) {
+    throw new Error("IPv6 prefix は 0 から 128 の整数で入力してください。");
+  }
+
+  const expandedParts = parseIpv6(ip);
+  const ipInt = ipv6ToBigInt(expandedParts);
+  const shift = 128n - BigInt(cidr);
+  const networkInt = shift === 128n ? 0n : (ipInt >> shift) << shift;
+  const networkParts = bigIntToIpv6(networkInt);
+
+  return {
+    version: 6,
+    items: [
+      { label: "Compressed", value: `${compressIpv6(expandedParts)}/${cidr}` },
+      { label: "Expanded", value: `${expandedParts.join(":")}/${cidr}` },
+      { label: "Network", value: `${compressIpv6(networkParts)}/${cidr}` }
+    ]
   };
 }
 
 function renderResult(data) {
-  fields.cidr.textContent = `/${data.cidr}`;
-  fields.mask.textContent = data.subnetMask;
-  fields.wildcard.textContent = data.wildcardMask;
-  fields.network.textContent = data.networkAddress;
-  fields.broadcast.textContent = data.broadcastAddress;
-  fields.hosts.textContent = data.usableHosts;
+  resultList.innerHTML = "";
+  resultList.classList.toggle("single-column", data.version === 6);
+
+  data.items.forEach((item, index) => {
+    const valueId = `result-value-${index}`;
+    const row = document.createElement("div");
+    row.className = "result-row";
+    row.innerHTML = `
+      <div class="result-head">
+        <span>${item.label}</span>
+        <button class="copy-button" data-copy-target="${valueId}" type="button" aria-label="Copy ${item.label}">
+          ${COPY_ICON}
+        </button>
+      </div>
+      <code id="${valueId}"></code>
+    `;
+    row.querySelector("code").textContent = item.value;
+    resultList.appendChild(row);
+  });
+
+  resultList.querySelectorAll(".copy-button").forEach((button) => {
+    button.addEventListener("click", copyResult);
+  });
+
   results.classList.remove("hidden");
 }
 
@@ -197,7 +376,9 @@ function updateCalculation() {
     }
 
     const parsed = parseInput(rawValue);
-    const result = calculateNetwork(parsed.ip, parsed.cidr);
+    const result = parsed.version === 6
+      ? calculateIpv6(parsed.ip, parsed.cidr)
+      : calculateNetwork(parsed.ip, parsed.cidr);
     setError("");
     renderResult(result);
   } catch (error) {
@@ -258,10 +439,6 @@ function flashCopied(button) {
 networkInput.addEventListener("input", updateCalculation);
 networkInput.addEventListener("focus", () => {
   networkInput.select();
-});
-
-copyButtons.forEach((button) => {
-  button.addEventListener("click", copyResult);
 });
 
 networkInput.value = "192.168.10.14 255.255.255.0";
